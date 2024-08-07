@@ -18,24 +18,22 @@ require('./oAuth-Passport/passport');
 const app = express();
 const server = http.createServer(app);
 
-
 app.use(cookieParser());
 app.use(express.json());
 // setup session
 app.use(session({
-  secret:process.env.SESSION_SECRET_KEY,
-  resave:false,
-  saveUninitialized:true
-}))
-// setuppassport
+  secret: process.env.SESSION_SECRET_KEY,
+  resave: false,
+  saveUninitialized: true
+}));
+// setup passport
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/',(req,res)=>{
-    res.send('Hello from server');
-})
-
+app.get('/', (req, res) => {
+  res.send('Hello from server');
+});
 
 // User Routes
 app.use('/api/user', userRoutes);
@@ -48,14 +46,12 @@ app.use('/api/ticket', ticketRoutes);
 // Payment Routes
 app.use('/api/payment', paymentRoutes);
 
-
 // Socket.io connection - Real-time ticket availability updates
-const __dirname = path.resolve();
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/client/dist")));
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
-	});
+  app.use(express.static(path.join(__dirname, "/client/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  });
 }
 
 initSocket(server);
@@ -68,4 +64,3 @@ sequelize.sync().then(() => {
 }).catch((error) => {
   console.error('Unable to connect to the database:', error);
 });
-
